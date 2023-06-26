@@ -59,7 +59,8 @@ def test_siren_website(driver):
     assert not next_button.is_enabled()  # Button should be disabled
 
     # Step 9: Select the type and click "Next"
-    siding_kind1_radio = driver.find_element(By.CSS_SELECTOR, "input[name='sdKind'][value='1']")
-    driver.execute_script("arguments[0].click();", siding_kind1_radio)
+    siding_kind1_radio = driver.find_element(By.XPATH, "(//div[@class='kindOfSiding__item'])[1]")
+    # driver.execute_script("arguments[0].click();", siding_kind1_radio)
+    siding_kind1_radio.click()
     assert next_button.is_enabled()
     next_button.click()
