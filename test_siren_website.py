@@ -33,8 +33,9 @@ def test_siren_website(driver):
     get_estimate_button = driver.find_element(By.CLASS_NAME, "customButton")
     get_estimate_button.click()
 
-    # Step 4: Wait and check the page title of the next page
-    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, "//h4[contains(text(), 'What type of project is this?')]")))
+    # Step 4: Wait and check the page title "Project type"
+    WebDriverWait(driver, 10).until(
+        ec.visibility_of_element_located((By.XPATH, "//h4[contains(text(), 'What type of project is this?')]")))
 
     # Step 5: Check that "Next" button disabled until the type is selected
     # project_type1_radio = driver.find_element(By.CSS_SELECTOR, "[data-autotest-radio-sdprojecttype-1]")
@@ -42,17 +43,15 @@ def test_siren_website(driver):
     assert not next_button.is_enabled()  # Button should be disabled
 
     # Step 6: Select the type and click "Next"
-    # wait = WebDriverWait(driver, 10)
-    # project_type1_radio = wait.until(ec.element_to_be_clickable((By.CSS_SELECTOR, "input[name='sdProjectType'][value='1']")))
     project_type1_radio = driver.find_element(By.CSS_SELECTOR, "input[name='sdProjectType'][value='1']")
-    # project_type1_radio.click()
     driver.execute_script("arguments[0].click();", project_type1_radio)
 
     assert next_button.is_enabled()
     next_button.click()
 
-    # Step 7: Wait and check the page title of the next page
-    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, "//h4[contains(text(), 'What kind of siding do you want?')]")))
+    # Step 7: Wait and check the page title "What kind of siding do you want?"
+    WebDriverWait(driver, 10).until(
+        ec.visibility_of_element_located((By.XPATH, "//h4[contains(text(), 'What kind of siding do you want?')]")))
 
     # Step 8: Check that "Next" button disabled until the type is selected
     next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
@@ -60,7 +59,43 @@ def test_siren_website(driver):
 
     # Step 9: Select the type and click "Next"
     siding_kind1_radio = driver.find_element(By.XPATH, "(//div[@class='kindOfSiding__item'])[1]")
-    # driver.execute_script("arguments[0].click();", siding_kind1_radio)
     siding_kind1_radio.click()
+    assert next_button.is_enabled()
+    next_button.click()
+
+    # Step 10: Wait and check the page title "Approximately how many square feet will be covered with new siding?"
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        (By.XPATH, "//h4[contains(text(),'Approximately how many square feet will be covered')]")))
+
+    # Step 11: Input the area value and click "Next"
+    siding_area_input = WebDriverWait(driver, 10).until(
+        ec.presence_of_element_located((By.CSS_SELECTOR, "label[for='squareFeet']")))
+    siding_area_input.send_keys("42")
+    next_button = driver.find_element(By.XPATH, "//button[@data-autotest-button-submit-next]")
+    next_button.click()
+
+    # Step 12: Wait and check the page title "Amount of stories"
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        (By.XPATH, "//h4[contains(text(),'How many stories is your house?')]")))
+    next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
+    assert not next_button.is_enabled()  # Button should be disabled
+
+    # Step 13: Select the amount of stories and click "Next"
+    stories_amount2_radio = driver.find_element(By.CSS_SELECTOR, "input[name='sdStories'][value='2']")
+    # stories_amount2_radio.click()
+    driver.execute_script("arguments[0].click();", stories_amount2_radio)
+    assert next_button.is_enabled()
+    next_button.click()
+
+    # Step 14: Wait and check the page title of the next page "Homeowner authorization"
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        (By.XPATH, "//h4[contains(text(),'Are you the homeowner or authorized to make property changes?')]")))
+    next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
+    assert not next_button.is_enabled()  # Button should be disabled
+
+    # Step 13: Select the amount of stories and click "Next"
+    internal_owner_yes_radio = driver.find_element(By.CSS_SELECTOR, "input[name='internalOwner'][value='1']")
+    # stories_amount2_radio.click()
+    driver.execute_script("arguments[0].click();", internal_owner_yes_radio)
     assert next_button.is_enabled()
     next_button.click()
