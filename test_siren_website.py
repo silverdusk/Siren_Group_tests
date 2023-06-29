@@ -68,8 +68,7 @@ def test_siren_website(driver):
         (By.XPATH, "//h4[contains(text(),'Approximately how many square feet will be covered')]")))
 
     # Step 11: Input the area value and click "Next"
-    siding_area_input = WebDriverWait(driver, 10).until(ec.presence_of_element_located(
-        (By.ID, "squareFeet")))
+    siding_area_input = driver.find_element(By.ID, "squareFeet")
     siding_area_input.clear()
     siding_area_input.send_keys("42")
     next_button = driver.find_element(By.XPATH, "//button[@data-autotest-button-submit-next]")
@@ -108,14 +107,14 @@ def test_siren_website(driver):
     # Step 17: Fill the form and click "Next"
     
     # 17.1 Find and fill the "Full name" input field
-    full_name_input = WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.ID, "fullName")))
+    full_name_input = driver.find_element(By.ID, "fullName")
     full_name_input.clear()
     name = "John"
     family_name = "Doe" 
     full_name_input.send_keys(name + " " + family_name)
 
     # 17.2 Find and fill the "Email address" input field
-    email_input = WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.ID, "email")))
+    email_input = driver.find_element(By.ID, "email")
     email_input.clear()
     email_input.send_keys("test@test.test")
 
