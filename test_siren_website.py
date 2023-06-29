@@ -68,8 +68,9 @@ def test_siren_website(driver):
         (By.XPATH, "//h4[contains(text(),'Approximately how many square feet will be covered')]")))
 
     # Step 11: Input the area value and click "Next"
-    siding_area_input = WebDriverWait(driver, 10).until(
-        ec.presence_of_element_located((By.CSS_SELECTOR, "label[for='squareFeet']")))
+    siding_area_input = WebDriverWait(driver, 10).until(ec.presence_of_element_located(
+        (By.ID, "squareFeet")))
+    siding_area_input.clear()
     siding_area_input.send_keys("42")
     next_button = driver.find_element(By.XPATH, "//button[@data-autotest-button-submit-next]")
     next_button.click()
@@ -93,9 +94,36 @@ def test_siren_website(driver):
     next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
     assert not next_button.is_enabled()  # Button should be disabled
 
-    # Step 13: Select the amount of stories and click "Next"
+    # Step 15: Select the amount of stories and click "Next"
     internal_owner_yes_radio = driver.find_element(By.CSS_SELECTOR, "input[name='internalOwner'][value='1']")
     # stories_amount2_radio.click()
     driver.execute_script("arguments[0].click();", internal_owner_yes_radio)
     assert next_button.is_enabled()
     next_button.click()
+
+    # Step 16: Wait and check the page title of the next page "Who should I prepare this estimate for?"
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        (By.XPATH, "//h4[contains(text(),'Who should I prepare this estimate for?')]")))
+
+    # Step 17: Fill the form and click "Next"
+    
+    # 17.1 Find and fill the "Full name" input field
+    full_name_input = WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.ID, "fullName")))
+    full_name_input.clear()
+    name = "John"
+    family_name = "Doe" 
+    full_name_input.send_keys(name + " " + family_name)
+
+    # 17.2 Find and fill the "Email address" input field
+    email_input = WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.ID, "email")))
+    email_input.clear()
+    email_input.send_keys("test@test.test")
+
+    # 17.4 Click the "Next" button
+    next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
+    next_button.click()
+
+    # Step 18: Wait and check the page title of the next page "Who should I prepare this estimate for?"
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        (By.XPATH, "//h4[contains(text(),'Who should I prepare this estimate for?')]")))
+    next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
