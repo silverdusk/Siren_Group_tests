@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import random
+import string
 
 
 # from pytest_html import html
@@ -15,7 +17,7 @@ def driver():
     # Initialize the WebDriver
     driver = webdriver.Chrome()  # Use the appropriate WebDriver for your browser
     yield driver
-    # Teardown - quit the WebDriver after the test completes
+    # Teardown - quit the WebDriver after the test complete
     driver.quit()
 
 
@@ -68,7 +70,7 @@ def test_siren_website(driver):
         (By.XPATH, "//h4[contains(text(),'Approximately how many square feet will be covered')]")))
 
     # Step 11: Input the area value and click "Next"
-    siding_area_input = driver.find_element(By.ID, "squareFeet")
+    siding_area_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-squarefeet-tel]")
     siding_area_input.clear()
     siding_area_input.send_keys("42")
     next_button = driver.find_element(By.XPATH, "//button[@data-autotest-button-submit-next]")
@@ -107,14 +109,14 @@ def test_siren_website(driver):
     # Step 17: Fill the form and click "Next"
     
     # 17.1 Find and fill the "Full name" input field
-    full_name_input = driver.find_element(By.ID, "fullName")
+    full_name_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-fullname-text]")
     full_name_input.clear()
     name = "John"
     family_name = "Doe" 
     full_name_input.send_keys(name + " " + family_name)
 
     # 17.2 Find and fill the "Email address" input field
-    email_input = driver.find_element(By.ID, "email")
+    email_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-email-email]")
     email_input.clear()
     email_input.send_keys("test@test.test")
 
@@ -122,7 +124,62 @@ def test_siren_website(driver):
     next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
     next_button.click()
 
-    # Step 18: Wait and check the page title of the next page "Who should I prepare this estimate for?"
+    # Step 18: Wait and check the page title of the next page "What is your phone number?"
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
-        (By.XPATH, "//h4[contains(text(),'Who should I prepare this estimate for?')]")))
-    next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
+        (By.XPATH, "//h4[contains(text(),'What is your phone number?')]")))
+
+    # Step 19 Find and fill the "Phone number" field
+    phone_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-phonenumber-tel]")
+    phone_input.clear()
+    phone_input.send_keys("2345678901")
+
+    # Step 20 Find and click the "Submit my request" button
+    submit_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-submit-my-request]")
+    submit_button.click()
+
+    if WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+            (By.XPATH, "//h4[contains(text(),'This phone number and email already exist in our database')]"))):
+
+        # Generate a new random phone number
+        random_phone = ''.join(random.choices(string.digits, k=10))
+        print("Random phone: " + random_phone)
+
+        # Find the phone input
+        phone_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-phonenumber-tel]")
+
+        # # Clear the value using JavaScript
+        # driver.execute_script("arguments[0].value = '';", phone_input)
+
+        phone_input.send_keys(Keys.CONTROL + "a")  # Select all text
+        phone_input.send_keys(Keys.BACKSPACE)  # Delete selected text
+        # phone_input.clear()
+        phone_input.send_keys(str(random_phone))
+        # phone_input.send_keys("0051803490")
+
+        # Find and click the "Next" button
+        next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
+        next_button.click()
+    elif WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+            (By.XPATH, "//h4[contains(text(),'Please confirm your phone number.')]"))):
+        confirm_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Phone number is correct')]")
+        confirm_button.click()
+
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        (By.XPATH, "//h4[contains(text(),'Thank you')]")))
+
+    # Find the message element
+    message_element = WebDriverWait(driver, 10).until(
+        ec.presence_of_element_located((By.XPATH, "//h4[contains(text(), 'Thank you')]")))
+
+    # Get the text of the message element
+    message_text = message_element.text
+
+    # Extract the name from the message
+
+    # Assuming the name is always preceded by "Thank you " and followed by ","
+    start_index = len("Thank you ")
+    end_index = message_text.index(",")
+    actual_name = message_text[start_index:end_index].strip()
+
+    # Compare the actual name with the expected name using an assertion
+    assert actual_name == name, f"Expected name: {name}, Actual name: {actual_name}"
