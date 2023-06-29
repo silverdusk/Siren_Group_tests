@@ -10,3 +10,8 @@ Main flow:
 -- enter the phone number
 -- (if necessary) confirm the phone number
 -- get a "thank you" page.
+
+Prerequisite:
+Python3
+pip install -U pytest
+pip install pytest-selenium

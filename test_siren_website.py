@@ -139,12 +139,6 @@ def test_siren_website(driver):
     submit_button.click()
 
     if element_exist_xpath(driver, "//h4[contains(text(),'This phone number and email already exist in our database')]"):
-        # WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
-        #     (By.XPATH, "//h4[contains(text(),'This phone number and email already exist in our database')]"))):
-
-        # Generate a new random phone number
-        random_phone = ''.join(random.choices(string.digits, k=10))
-        print("Random phone: " + random_phone)
 
         # Find the phone input
         phone_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-phonenumber-tel]")
@@ -159,7 +153,11 @@ def test_siren_website(driver):
         # I use the "Backspace" because basic "clear()" func and even "CONTROL + a" are not working here
         phone_input.send_keys(10 * Keys.BACKSPACE)  # Delete selected text
 
-        phone_input.send_keys(str(random_phone))
+        # Generate a new random phone number
+        random_phone = random.choice('234567890') + ''.join(random.choices(string.digits, k=9))
+        print("Random phone: " + random_phone)
+
+        phone_input.send_keys(random_phone)
         # phone_input.send_keys("0051803490")
 
         # Find and click the "Next" button
@@ -167,8 +165,6 @@ def test_siren_website(driver):
         next_button.click()
 
     if element_exist_xpath(driver, "//h4[contains(text(),'Please confirm your phone number.')]"):
-        # WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
-        #     (By.XPATH, "//h4[contains(text(),'Please confirm your phone number.')]"))):
         confirm_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-phone-number-is-correct]")
         confirm_button.click()
 
