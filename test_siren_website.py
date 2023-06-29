@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import random
 import string
+from helper import *
 
 
 # from pytest_html import html
@@ -28,11 +29,11 @@ def test_siren_website(driver):
     assert "Siding - HomeBuddy" in driver.title
 
     # Step 2: Find the zip code input field and enter a valid zip code
-    zip_code_input = driver.find_element(By.ID, "zipCode")
+    zip_code_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-0]")
     zip_code_input.send_keys("09090")
 
     # Step 3: Find and click the "Get estimate" button
-    get_estimate_button = driver.find_element(By.CLASS_NAME, "customButton")
+    get_estimate_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-0]")
     get_estimate_button.click()
 
     # Step 4: Wait and check the page title "Project type"
@@ -45,7 +46,7 @@ def test_siren_website(driver):
     assert not next_button.is_enabled()  # Button should be disabled
 
     # Step 6: Select the type and click "Next"
-    project_type1_radio = driver.find_element(By.CSS_SELECTOR, "input[name='sdProjectType'][value='1']")
+    project_type1_radio = driver.find_element(By.CSS_SELECTOR, "[data-autotest-radio-sdprojecttype-1]")
     driver.execute_script("arguments[0].click();", project_type1_radio)
 
     assert next_button.is_enabled()
@@ -137,8 +138,9 @@ def test_siren_website(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-submit-my-request]")
     submit_button.click()
 
-    if WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
-            (By.XPATH, "//h4[contains(text(),'This phone number and email already exist in our database')]"))):
+    if element_exist_xpath(driver, "//h4[contains(text(),'This phone number and email already exist in our database')]"):
+        # WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        #     (By.XPATH, "//h4[contains(text(),'This phone number and email already exist in our database')]"))):
 
         # Generate a new random phone number
         random_phone = ''.join(random.choices(string.digits, k=10))
@@ -147,23 +149,30 @@ def test_siren_website(driver):
         # Find the phone input
         phone_input = driver.find_element(By.CSS_SELECTOR, "[data-autotest-input-phonenumber-tel]")
 
-        # # Clear the value using JavaScript
-        # driver.execute_script("arguments[0].value = '';", phone_input)
+        # # Clear the phone value:
 
-        phone_input.send_keys(Keys.CONTROL + "a")  # Select all text
-        phone_input.send_keys(Keys.BACKSPACE)  # Delete selected text
+        # TODO: find out why options are not working here.
+        # driver.execute_script("arguments[0].value = '';", phone_input)
+        # phone_input.send_keys(Keys.CONTROL + "a")  # Select all text
         # phone_input.clear()
+
+        # I use the "Backspace" because basic "clear()" func and even "CONTROL + a" are not working here
+        phone_input.send_keys(10 * Keys.BACKSPACE)  # Delete selected text
+
         phone_input.send_keys(str(random_phone))
         # phone_input.send_keys("0051803490")
 
         # Find and click the "Next" button
         next_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-next]")
         next_button.click()
-    elif WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
-            (By.XPATH, "//h4[contains(text(),'Please confirm your phone number.')]"))):
-        confirm_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Phone number is correct')]")
+
+    if element_exist_xpath(driver, "//h4[contains(text(),'Please confirm your phone number.')]"):
+        # WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
+        #     (By.XPATH, "//h4[contains(text(),'Please confirm your phone number.')]"))):
+        confirm_button = driver.find_element(By.CSS_SELECTOR, "[data-autotest-button-submit-phone-number-is-correct]")
         confirm_button.click()
 
+    # Final Page
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located(
         (By.XPATH, "//h4[contains(text(),'Thank you')]")))
 
