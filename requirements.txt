@@ -1,7 +1,7 @@
 Appium-Python-Client==2.11.1
 async-generator==1.10
 attrs==23.1.0
-certifi==2023.5.7
+certifi==2023.7.22
 exceptiongroup==1.1.1
 h11==0.14.0
 idna==3.4

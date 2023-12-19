@@ -1,4 +1,5 @@
 import pytest
+import allure
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -8,6 +9,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import random
 import string
 from helper import *
+from pages.home_page import HomePage
+
 
 
 @pytest.fixture
