@@ -12,6 +12,23 @@ from helper import *
 from pages.home_page import HomePage
 
 
+@allure.feature("Home Page")
+class TestHomePage:
+    @allure.title("Test navigating to home page")
+    def test_navigate_to_home(self):
+        with allure.step("Open browser"):
+            driver = webdriver.Chrome()
+            home_page = HomePage(driver)
+
+        with allure.step("Navigate to home page"):
+            home_page.navigate_to_home()
+
+        with allure.step("Verify title"):
+            assert "Home Page Title" in driver.title
+
+        allure.attach(driver.get_screenshot_as_png(), name="screenshot", attachment_type=allure.attachment_type.PNG)
+        driver.quit()
+
 
 @pytest.fixture
 def driver():
